@@ -38,10 +38,20 @@ export async function POST(request: Request) {
     // Get current leaderboard
     const currentLeaderboard = await kv.get<LeaderboardEntry[]>(LEADERBOARD_KEY) || []
 
-    // Add new entry, sort, and keep top 5
+    // Check if score qualifies for top 5
+    const shouldAddScore =
+      currentLeaderboard.length < 5 || // Leaderboard not full yet
+      newEntry.score >= currentLeaderboard[currentLeaderboard.length - 1].score // Beats or ties the last (5th) place
+
+    if (!shouldAddScore) {
+      // Score doesn't qualify, return current leaderboard
+      return NextResponse.json(currentLeaderboard)
+    }
+
+    // Add new entry, sort by highest score first, and keep top 5
     const updatedLeaderboard = [...currentLeaderboard, newEntry]
-      .sort((a, b) => b.score - a.score)
-      .slice(0, 5)
+      .sort((a, b) => b.score - a.score) // b - a = descending order (highest first)
+      .slice(0, 5) // Keep only top 5
 
     // Save back to KV
     await kv.set(LEADERBOARD_KEY, updatedLeaderboard)
