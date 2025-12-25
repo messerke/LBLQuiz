@@ -1,0 +1,38 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
+
+@layer utilities {
+  .snowflake {
+    position: absolute;
+    color: white;
+    opacity: 0.8;
+    animation: fall linear infinite;
+    user-select: none;
+    pointer-events: none;
+  }
+
+  @keyframes fall {
+    to {
+      transform: translateY(100vh);
+    }
+  }
+}
+
+.button-christmas {
+  @apply bg-christmas-red hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition-all duration-200 transform hover:scale-105;
+}
+
+.button-christmas-secondary {
+  @apply bg-christmas-green hover:bg-christmas-darkGreen text-white font-bold py-3 px-6 rounded-lg shadow-lg transition-all duration-200 transform hover:scale-105;
+}
+
+.card-christmas {
+  @apply bg-white rounded-xl shadow-2xl p-6 border-4 border-christmas-gold;
+}
