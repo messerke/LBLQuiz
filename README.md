@@ -78,7 +78,7 @@ npm run build
 2. **Quiz Questions:** 11 randomly selected questions from your image pool
 3. **Answer Feedback:** After each answer, players see if they were correct or wrong
 4. **Final Score:** At the end, players see their score with a funny message
-5. **Leaderboard:** Top 5 scores are saved in browser localStorage
+5. **Leaderboard:** Top 5 scores are shared globally using Vercel KV (see setup below)
 
 ## 🏆 Score Messages
 
@@ -104,6 +104,19 @@ The app features:
 4. Vercel will auto-detect Next.js and deploy
 5. Make sure your images are in the `public/images/` folder before deploying!
 
+### 🗄️ Setting Up Shared Leaderboard
+
+After deploying, you need to set up Vercel KV for the shared leaderboard:
+
+**See full instructions in [VERCEL_KV_SETUP.md](VERCEL_KV_SETUP.md)**
+
+Quick steps:
+1. Go to Vercel Dashboard → Storage → Create Database → KV
+2. Connect it to your project
+3. Done! Scores are now shared across all users
+
+Without this setup, the leaderboard will be empty (but the quiz still works!).
+
 ## ⚙️ Customization
 
 ### Change Number of Questions
@@ -124,17 +137,18 @@ Edit the `getScoreMessage` function in `app/page.tsx` (lines 36-63)
 
 ## 🛠️ Tech Stack
 
-- **Framework:** Next.js 14
+- **Framework:** Next.js 16
+- **React:** React 19
 - **Styling:** Tailwind CSS
 - **Language:** TypeScript
-- **Storage:** Browser localStorage
+- **Database:** Vercel KV (Redis)
 - **Deployment:** Vercel
 
 ## 📝 Notes
 
-- The leaderboard is stored locally in each user's browser
+- The leaderboard is shared globally across all users via Vercel KV
 - Quiz questions are randomized each time
 - Images should be clear and appropriate size for best display
-- Recommended image aspect ratio: 3:4 (portrait)
+- Recommended image aspect ratio: close to 4:5 (portrait)
 
 Enjoy your Christmas quiz! 🎅🎁

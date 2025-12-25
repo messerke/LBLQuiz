@@ -99,13 +99,26 @@ export default function Home() {
   const [playerName, setPlayerName] = useState('')
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([])
   const [showLeaderboard, setShowLeaderboard] = useState(false)
+  const [isLoadingLeaderboard, setIsLoadingLeaderboard] = useState(false)
+  const [isSavingScore, setIsSavingScore] = useState(false)
 
   useEffect(() => {
-    // Load leaderboard from localStorage
-    const saved = localStorage.getItem('lbl-quiz-leaderboard')
-    if (saved) {
-      setLeaderboard(JSON.parse(saved))
+    // Load leaderboard from API
+    const fetchLeaderboard = async () => {
+      setIsLoadingLeaderboard(true)
+      try {
+        const response = await fetch('/api/leaderboard')
+        if (response.ok) {
+          const data = await response.json()
+          setLeaderboard(data)
+        }
+      } catch (error) {
+        console.error('Failed to fetch leaderboard:', error)
+      } finally {
+        setIsLoadingLeaderboard(false)
+      }
     }
+    fetchLeaderboard()
   }, [])
 
   const startGame = () => {
@@ -138,7 +151,7 @@ export default function Home() {
     }
   }
 
-  const saveScore = () => {
+  const saveScore = async () => {
     if (!playerName.trim()) {
       alert('Please enter your name!')
       return
@@ -150,13 +163,27 @@ export default function Home() {
       date: new Date().toISOString(),
     }
 
-    const updatedLeaderboard = [...leaderboard, newEntry]
-      .sort((a, b) => b.score - a.score)
-      .slice(0, 5)
+    setIsSavingScore(true)
+    try {
+      const response = await fetch('/api/leaderboard', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newEntry),
+      })
 
-    setLeaderboard(updatedLeaderboard)
-    localStorage.setItem('lbl-quiz-leaderboard', JSON.stringify(updatedLeaderboard))
-    setShowLeaderboard(true)
+      if (response.ok) {
+        const updatedLeaderboard = await response.json()
+        setLeaderboard(updatedLeaderboard)
+        setShowLeaderboard(true)
+      } else {
+        alert('Failed to save score. Please try again!')
+      }
+    } catch (error) {
+      console.error('Error saving score:', error)
+      alert('Failed to save score. Please try again!')
+    } finally {
+      setIsSavingScore(false)
+    }
   }
 
   const resetGame = () => {
@@ -192,26 +219,36 @@ export default function Home() {
             </button>
           </div>
 
-          {showLeaderboard && leaderboard.length > 0 && (
+          {showLeaderboard && (
             <div className="mt-8 p-4 bg-christmas-snow rounded-lg">
               <h3 className="text-2xl font-bold text-christmas-green text-center mb-4">
                 🏆 Top 5 Players 🏆
               </h3>
-              <div className="space-y-2">
-                {leaderboard.map((entry, index) => (
-                  <div
-                    key={index}
-                    className="flex justify-between items-center p-3 bg-white rounded-lg shadow"
-                  >
-                    <span className="font-bold text-lg">
-                      {index + 1}. {entry.name}
-                    </span>
-                    <span className="text-christmas-red font-bold text-xl">
-                      {entry.score}/11
-                    </span>
-                  </div>
-                ))}
-              </div>
+              {isLoadingLeaderboard ? (
+                <div className="text-center text-gray-600 py-4">
+                  Loading leaderboard...
+                </div>
+              ) : leaderboard.length > 0 ? (
+                <div className="space-y-2">
+                  {leaderboard.map((entry, index) => (
+                    <div
+                      key={index}
+                      className="flex justify-between items-center p-3 bg-white rounded-lg shadow"
+                    >
+                      <span className="font-bold text-lg">
+                        {index + 1}. {entry.name}
+                      </span>
+                      <span className="text-christmas-red font-bold text-xl">
+                        {entry.score}/11
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center text-gray-600 py-4">
+                  No scores yet. Be the first! 🎄
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -325,8 +362,12 @@ export default function Home() {
                 onKeyPress={(e) => e.key === 'Enter' && saveScore()}
                 className="w-full p-4 text-lg border-4 border-christmas-gold rounded-lg focus:outline-none focus:ring-4 focus:ring-christmas-red"
               />
-              <button onClick={saveScore} className="button-christmas w-full text-xl">
-                Save Score 🏆
+              <button
+                onClick={saveScore}
+                disabled={isSavingScore}
+                className="button-christmas w-full text-xl disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isSavingScore ? 'Saving...' : 'Save Score 🏆'}
               </button>
               <button onClick={resetGame} className="button-christmas-secondary w-full text-xl">
                 Play Again 🎄
