@@ -78,7 +78,7 @@ npm run build
 2. **Quiz Questions:** 11 randomly selected questions from your image pool
 3. **Answer Feedback:** After each answer, players see if they were correct or wrong
 4. **Final Score:** At the end, players see their score with a funny message
-5. **Leaderboard:** Top 5 scores are shared globally using Vercel KV (see setup below)
+5. **Leaderboard:** Top 5 scores are shared globally using Upstash Redis (see setup below)
 
 ## 🏆 Score Messages
 
@@ -106,14 +106,16 @@ The app features:
 
 ### 🗄️ Setting Up Shared Leaderboard
 
-After deploying, you need to set up Vercel KV for the shared leaderboard:
+After deploying, you need to set up Upstash Redis for the shared leaderboard:
 
-**See full instructions in [VERCEL_KV_SETUP.md](VERCEL_KV_SETUP.md)**
+**See full instructions in [UPSTASH_REDIS_SETUP.md](UPSTASH_REDIS_SETUP.md)**
 
 Quick steps:
-1. Go to Vercel Dashboard → Storage → Create Database → KV
-2. Connect it to your project
-3. Done! Scores are now shared across all users
+1. Visit [Upstash for Vercel](https://vercel.com/marketplace/upstash)
+2. Click "Add Integration" and select your project
+3. Create a Redis database (free tier available!)
+4. Connect to your project and redeploy
+5. Done! Scores are now shared across all users
 
 Without this setup, the leaderboard will be empty (but the quiz still works!).
 
@@ -141,12 +143,13 @@ Edit the `getScoreMessage` function in `app/page.tsx` (lines 36-63)
 - **React:** React 19
 - **Styling:** Tailwind CSS
 - **Language:** TypeScript
-- **Database:** Vercel KV (Redis)
+- **Database:** Upstash Redis (via Vercel Marketplace)
+- **SDK:** @vercel/kv
 - **Deployment:** Vercel
 
 ## 📝 Notes
 
-- The leaderboard is shared globally across all users via Vercel KV
+- The leaderboard is shared globally across all users via Upstash Redis
 - Quiz questions are randomized each time
 - Images should be clear and appropriate size for best display
 - Recommended image aspect ratio: close to 4:5 (portrait)

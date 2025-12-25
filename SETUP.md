@@ -38,6 +38,18 @@ npm run build
 # 3. Deploy (Vercel auto-detects Next.js)
 ```
 
+## Step 4: Enable Shared Leaderboard (Optional but Recommended!)
+
+To share scores across all users:
+
+1. Go to [Upstash for Vercel](https://vercel.com/marketplace/upstash)
+2. Click "Add Integration" → Select your project
+3. Create a Redis database (free tier!)
+4. Connect to your project
+5. Redeploy
+
+**See detailed instructions:** [UPSTASH_REDIS_SETUP.md](UPSTASH_REDIS_SETUP.md)
+
 ## That's it! 🎅
 
 Your Christmas quiz is ready to play!
